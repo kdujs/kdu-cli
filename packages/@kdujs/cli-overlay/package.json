@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-overlay",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "error overlay & dev server middleware for kdu-cli",
   "main": "dist/client.js",
   "files": [

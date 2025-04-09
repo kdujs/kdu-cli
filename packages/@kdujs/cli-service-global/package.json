@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-service-global",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "kdu-cli-service global addon for kdu-cli",
   "main": "index.js",
   "publishConfig": {
@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/cli-build#readme",
   "dependencies": {
-    "@kdujs/babel-preset-app": "3.5.1-0",
-    "@kdujs/cli-plugin-babel": "3.5.1-0",
-    "@kdujs/cli-plugin-eslint": "3.5.1-0",
-    "@kdujs/cli-service": "3.5.1-0",
+    "@kdujs/babel-preset-app": "^3.5.1",
+    "@kdujs/cli-plugin-babel": "^3.5.1",
+    "@kdujs/cli-plugin-eslint": "^3.5.1",
+    "@kdujs/cli-service": "^3.5.1",
     "babel-eslint": "10.0.1",
     "chalk": "2.4.2",
     "eslint": "4.19.1",

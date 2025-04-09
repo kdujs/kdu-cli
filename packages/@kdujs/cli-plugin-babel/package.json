@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-plugin-babel",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "babel plugin for kdu-cli",
   "main": "index.js",
   "repository": {
@@ -21,8 +21,8 @@
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/cli-plugin-babel#readme",
   "dependencies": {
     "@babel/core": "7.0.0",
-    "@kdujs/babel-preset-app": "3.5.1-0",
-    "@kdujs/cli-shared-utils": "3.5.1-0",
+    "@kdujs/babel-preset-app": "^3.5.1",
+    "@kdujs/cli-shared-utils": "^3.5.1",
     "babel-loader": "8.0.5",
     "webpack": ">=4 < 4.29"
   },

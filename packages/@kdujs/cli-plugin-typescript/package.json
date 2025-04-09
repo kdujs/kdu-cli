@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-plugin-typescript",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "typescript plugin for kdu-cli",
   "main": "index.js",
   "repository": {
@@ -23,8 +23,8 @@
     "access": "public"
   },
   "dependencies": {
+    "@kdujs/cli-shared-utils": "^3.5.1",
     "@types/webpack-env": "1.13.6",
-    "@kdujs/cli-shared-utils": "3.5.1-0",
     "fork-ts-checker-webpack-plugin": "0.5.2",
     "globby": "9.0.0",
     "ts-loader": "5.3.3",

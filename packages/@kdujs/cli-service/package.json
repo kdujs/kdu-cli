@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-service",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "local service for kdu-cli projects",
   "main": "lib/Service.js",
   "typings": "types/index.d.ts",
@@ -24,8 +24,8 @@
   "homepage": "https://kdujs-cli.web.app/",
   "dependencies": {
     "@intervolga/optimize-cssnano-plugin": "1.0.5",
-    "@kdujs/cli-overlay": "3.5.1-0",
-    "@kdujs/cli-shared-utils": "3.5.1-0",
+    "@kdujs/cli-overlay": "^3.5.1",
+    "@kdujs/cli-shared-utils": "^3.5.1",
     "@kdujs/component-compiler-utils": "2.6.0",
     "@kdujs/preload-webpack-plugin": "1.1.0",
     "@kdujs/web-component-wrapper": "1.2.0",

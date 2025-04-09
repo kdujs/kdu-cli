@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli",
-  "version": "3.5.1-0",
+  "version": "3.5.1",
   "description": "Command line interface for rapid Kdu.js development",
   "bin": {
     "kdu": "bin/kdu.js"
@@ -24,7 +24,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@kdujs/cli-shared-utils": "3.5.1-0",
+    "@kdujs/cli-shared-utils": "^3.5.1",
     "chalk": "2.4.1",
     "cmd-shim": "2.0.2",
     "commander": "2.16.0",
