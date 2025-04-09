@@ -13,6 +13,7 @@ const xdgConfigPath = file => {
   }
 }
 
+// migration for 3.0.0-rc.7
 // we introduced a change storing .kdurc in AppData, but the benefit isn't
 // really obvious so we are reverting it to keep consistency across OSes
 const migrateWindowsConfigPath = file => {

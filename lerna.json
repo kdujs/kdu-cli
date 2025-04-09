@@ -1,6 +1,9 @@
 {
-  "lerna": "2.5.1",
   "npmClient": "yarn",
-  "useWorkspaces": true,
-  "version": "3.0.0"
+  "useWorkspaces": false,
+  "version": "3.5.1-0",
+  "packages": [
+    "packages/@kdujs/babel-preset-app",
+    "packages/@kdujs/cli*"
+  ]
 }

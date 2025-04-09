@@ -1,6 +1,14 @@
+const path = require('path')
+
 module.exports = (api, options) => {
   if (options.lintOnSave) {
     const extensions = require('./eslintOptions').extensions(api)
+    // Use loadModule to allow users to customize their ESLint dependency version.
+    const { resolveModule, loadModule } = require('@kdujs/cli-shared-utils')
+    const cwd = api.getCwd()
+    const eslintPkg =
+      loadModule('eslint/package.json', cwd, true) ||
+      require('eslint/package.json')
 
     // eslint-loader doesn't bust cache when eslint config changes
     // so we have to manually generate a cache identifier that takes the config
@@ -9,7 +17,7 @@ module.exports = (api, options) => {
       'eslint-loader',
       {
         'eslint-loader': require('eslint-loader/package.json').version,
-        'eslint': require('eslint/package.json').version
+        'eslint': eslintPkg.version
       },
       [
         '.eslintrc.js',
@@ -22,6 +30,8 @@ module.exports = (api, options) => {
     )
 
     api.chainWebpack(webpackConfig => {
+      webpackConfig.resolveLoader.modules.prepend(path.join(__dirname, 'node_modules'))
+
       webpackConfig.module
         .rule('eslint')
           .pre()
@@ -37,7 +47,11 @@ module.exports = (api, options) => {
               cache: true,
               cacheIdentifier,
               emitWarning: options.lintOnSave !== 'error',
-              formatter: require('eslint/lib/formatters/codeframe')
+              emitError: options.lintOnSave === 'error',
+              eslintPath: resolveModule('eslint', cwd) || require.resolve('eslint'),
+              formatter:
+                loadModule('eslint/lib/formatters/codeframe', cwd, true) ||
+                require('eslint/lib/formatters/codeframe')
             })
     })
   }
@@ -47,7 +61,8 @@ module.exports = (api, options) => {
     usage: 'kdu-cli-service lint [options] [...files]',
     options: {
       '--format [formatter]': 'specify formatter (default: codeframe)',
-      '--no-fix': 'do not fix errors',
+      '--no-fix': 'do not fix errors or warnings',
+      '--no-fix-warnings': 'fix errors, but do not fix warnings',
       '--max-errors [limit]': 'specify number of errors to make build failed (default: 0)',
       '--max-warnings [limit]': 'specify number of warnings to make build failed (default: Infinity)'
     },

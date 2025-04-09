@@ -24,6 +24,7 @@ module.exports = function createConfigPlugin (context, entry, asLib) {
         config.resolve
           .alias
             .set('core-js', path.dirname(require.resolve('core-js')))
+            .set('regenerator-runtime', path.dirname(require.resolve('regenerator-runtime')))
 
         // ensure loaders can be resolved properly
         // this is done by locating kdu's install location (which is a
@@ -36,7 +37,7 @@ module.exports = function createConfigPlugin (context, entry, asLib) {
         // add resolve alias for kdu and kdu-hot-reload-api
         // but prioritize versions installed locally.
         try {
-          resolve.sync('kdu', { basedir: context })
+          resolve.sync('v', { basedir: context })
         } catch (e) {
           const kduPath = path.dirname(require.resolve('kdu'))
           config.resolve.alias
@@ -107,7 +108,10 @@ module.exports = function createConfigPlugin (context, entry, asLib) {
                   extends: [
                     'plugin:kdu/essential',
                     'eslint:recommended'
-                  ]
+                  ],
+                  parserOptions: {
+                    parser: 'babel-eslint'
+                  }
                 }
               }))
 

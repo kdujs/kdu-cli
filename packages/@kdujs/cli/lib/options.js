@@ -13,12 +13,15 @@ const presetSchema = createSchema(joi => joi.object().keys({
   router: joi.boolean(),
   routerHistoryMode: joi.boolean(),
   kdux: joi.boolean(),
-  cssPreprocessor: joi.string().only(['sass', 'less', 'stylus']),
+  // TODO: remove 'sass' or make it equivalent to 'dart-sass' in v4
+  cssPreprocessor: joi.string().only(['sass', 'dart-sass', 'node-sass', 'less', 'stylus']),
   plugins: joi.object().required(),
   configs: joi.object()
 }))
 
 const schema = createSchema(joi => joi.object().keys({
+  latestVersion: joi.string().regex(/^\d+\.\d+\.\d+$/),
+  lastChecked: joi.date().timestamp(),
   packageManager: joi.string().only(['yarn', 'npm']),
   useTaobaoRegistry: joi.boolean(),
   presets: joi.object().pattern(/^/, presetSchema)
@@ -43,6 +46,9 @@ exports.defaultPreset = {
 }
 
 exports.defaults = {
+  lastChecked: undefined,
+  latestVersion: undefined,
+
   packageManager: undefined,
   useTaobaoRegistry: undefined,
   presets: {

@@ -29,6 +29,7 @@ module.exports = function lint (args = {}, api, silent) {
       if (isKduFile(file)) {
         const parts = kduFileCache.get(path.normalize(file))
         if (parts) {
+          parts.content = content
           const { before, after } = parts
           content = `${before}\n${content.trim()}\n${after}`
         }
@@ -42,14 +43,20 @@ module.exports = function lint (args = {}, api, silent) {
   }
 
   const parseTSFromKduFile = file => {
+    // If the file has already been cached, don't read the file again. Use the cache instead.
+    if (kduFileCache.has(file)) {
+      return kduFileCache.get(file)
+    }
+
     const content = fs.readFileSync(file, 'utf-8')
     const { script } = kduCompiler.parseComponent(content, { pad: 'line' })
     if (script && /^tsx?$/.test(script.lang)) {
       kduFileCache.set(file, {
         before: content.slice(0, script.start),
-        after: content.slice(script.end)
+        after: content.slice(script.end),
+        content: script.content
       })
-      return script.content
+      return script
     }
   }
 
@@ -61,8 +68,9 @@ module.exports = function lint (args = {}, api, silent) {
     const getSourceFile = program.getSourceFile
     program.getSourceFile = function (file, languageVersion, onError) {
       if (isKduFile(file)) {
-        const script = parseTSFromKduFile(file) || ''
-        return ts.createSourceFile(file, script, languageVersion, true)
+        const { content, lang = 'js' } = parseTSFromKduFile(file) || { content: '', lang: 'js' }
+        const contentLang = ts.ScriptKind[lang.toUpperCase()]
+        return ts.createSourceFile(file, content, languageVersion, true, contentLang)
       } else {
         return getSourceFile.call(this, file, languageVersion, onError)
       }
@@ -80,7 +88,11 @@ module.exports = function lint (args = {}, api, silent) {
     patchProgram(this.program)
   }
 
-  const config = tslint.Configuration.findConfiguration(api.resolve('tslint.json')).results
+  const tslintConfigPath = tslint.Configuration.CONFIG_FILENAMES
+    .map(filename => api.resolve(filename))
+    .find(file => fs.existsSync(file))
+
+  const config = tslint.Configuration.findConfiguration(tslintConfigPath).results
   // create a patched config that disables the blank lines rule,
   // so that we get correct line numbers in error reports for *.kdu files.
   const kduConfig = Object.assign(config)
@@ -107,6 +119,14 @@ module.exports = function lint (args = {}, api, silent) {
   const files = args._ && args._.length
     ? args._
     : ['src/**/*.ts', 'src/**/*.kdu', 'src/**/*.tsx', 'tests/**/*.ts', 'tests/**/*.tsx']
+
+  // respect linterOptions.exclude from tslint.json
+  if (config.linterOptions && config.linterOptions.exclude) {
+    // use the raw tslint.json data because config contains absolute paths
+    const rawTslintConfig = tslint.Configuration.readConfigurationFile(tslintConfigPath)
+    const excludedGlobs = rawTslintConfig.linterOptions.exclude
+    excludedGlobs.forEach((g) => files.push('!' + g))
+  }
 
   return globby(files, { cwd }).then(files => {
     files.forEach(lint)

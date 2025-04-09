@@ -3,7 +3,7 @@ module.exports = (api, options) => {
   api.injectRootOptions(api.entryFile, `store`)
   api.extendPackage({
     dependencies: {
-      kdux: '^3.6.2'
+      kdux: '^3.0.0'
     }
   })
   api.render('./template')

@@ -1,5 +1,7 @@
 module.exports = (api, options) => {
-  api.render('./template')
+  api.render('./template', {
+    doesCompile: api.hasPlugin('babel') || api.hasPlugin('typescript')
+  })
 
   api.extendPackage({
     scripts: {
@@ -7,10 +9,10 @@ module.exports = (api, options) => {
       'build': 'kdu-cli-service build'
     },
     dependencies: {
-      'kdu': '^2.5.24'
+      'kdu': '^2.6.14'
     },
     devDependencies: {
-      'kdu-template-compiler': '^2.5.24'
+      'kdu-template-compiler': '^2.6.14'
     },
     'postcss': {
       'plugins': {
@@ -34,9 +36,18 @@ module.exports = (api, options) => {
 
   if (options.cssPreprocessor) {
     const deps = {
+      // TODO: remove 'sass' option in v4 or rename 'dart-sass' to 'sass'
       sass: {
         'node-sass': '^4.9.0',
-        'sass-loader': '^7.0.1'
+        'sass-loader': '^7.1.0'
+      },
+      'node-sass': {
+        'node-sass': '^4.9.0',
+        'sass-loader': '^7.1.0'
+      },
+      'dart-sass': {
+        sass: '^1.17.2',
+        'sass-loader': '^7.1.0'
       },
       less: {
         'less': '^3.0.4',

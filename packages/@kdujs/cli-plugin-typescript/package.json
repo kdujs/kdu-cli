@@ -1,11 +1,12 @@
 {
   "name": "@kdujs/cli-plugin-typescript",
-  "version": "3.0.0",
+  "version": "3.5.1-0",
   "description": "typescript plugin for kdu-cli",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/cli-plugin-typescript"
   },
   "keywords": [
     "kdu",
@@ -22,22 +23,23 @@
     "access": "public"
   },
   "dependencies": {
-    "@kdujs/cli-shared-utils": "^3.0.0",
-    "@types/node": "^10.5.2",
-    "fork-ts-checker-webpack-plugin": "^0.4.4",
-    "globby": "^8.0.1",
-    "ts-loader": "^4.4.2",
-    "tslint": "^5.10.0"
+    "@types/webpack-env": "1.13.6",
+    "@kdujs/cli-shared-utils": "3.5.1-0",
+    "fork-ts-checker-webpack-plugin": "0.5.2",
+    "globby": "9.0.0",
+    "ts-loader": "5.3.3",
+    "tslint": "5.13.0",
+    "webpack": ">=4 < 4.29"
   },
   "peerDependencies": {
     "typescript": ">=2"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.0",
-    "@types/jest": "^23.1.4",
-    "@types/mocha": "^5.2.4",
-    "kdu-class-component": "^6.2.0",
-    "kdu-property-decorator": "^7.0.0",
-    "typescript": "^3.0.0"
+    "@types/chai": "4.1.0",
+    "@types/jest": "23.1.4",
+    "@types/mocha": "5.2.6",
+    "kdu-class-component": "6.2.0",
+    "kdu-property-decorator": "7.0.0",
+    "typescript": "3.3.3333"
   }
 }

@@ -19,6 +19,14 @@ function checkNodeVersion (wanted, id) {
 
 checkNodeVersion(requiredVersion, 'kdu-cli')
 
+if (semver.satisfies(process.version, '9.x')) {
+  console.log(chalk.red(
+    `You are using Node ${process.version}.\n` +
+    `Node.js 9.x has already reached end-of-life and will not be supported in future major releases.\n` +
+    `It's strongly recommended to use an active LTS version instead.`
+  ))
+}
+
 const fs = require('fs')
 const path = require('path')
 const slash = require('slash')
@@ -57,7 +65,11 @@ program
   .option('-b, --bare', 'Scaffold project without beginner instructions')
   .action((name, cmd) => {
     const options = cleanArgs(cmd)
-    // --no-git makes commander to default git to true
+
+    if (minimist(process.argv.slice(3))._.length > 1) {
+      console.log(chalk.yellow('\n Info: You provided more than one argument. The first one will be used as the app\'s name, the rest are ignored.'))
+    }
+    // --git makes commander to default git to true
     if (process.argv.includes('-g') || process.argv.includes('--git')) {
       options.forceGit = true
     }
@@ -67,6 +79,7 @@ program
 program
   .command('add <plugin> [pluginOptions]')
   .description('install a plugin and invoke its generator in an already created project')
+  .option('--registry <url>', 'Use specified npm registry when installing dependencies (only for npm)')
   .allowUnknownOption()
   .action((plugin) => {
     require('../lib/add')(plugin, minimist(process.argv.slice(3)))
@@ -75,6 +88,7 @@ program
 program
   .command('invoke <plugin> [pluginOptions]')
   .description('invoke the generator of a plugin in an already created project')
+  .option('--registry <url>', 'Use specified npm registry when installing dependencies (only for npm)')
   .allowUnknownOption()
   .action((plugin) => {
     require('../lib/invoke')(plugin, minimist(process.argv.slice(3)))
@@ -174,12 +188,16 @@ if (!process.argv.slice(2).length) {
   program.outputHelp()
 }
 
+function camelize (str) {
+  return str.replace(/-(\w)/g, (_, c) => c ? c.toUpperCase() : '')
+}
+
 // commander passes the Command object itself as options,
 // extract only actual options into a fresh object.
 function cleanArgs (cmd) {
   const args = {}
   cmd.options.forEach(o => {
-    const key = o.long.replace(/^--/, '')
+    const key = camelize(o.long.replace(/^--/, ''))
     // if an option is not present and Command has a method with the same name
     // it should not be copied
     if (typeof cmd[key] !== 'function' && typeof cmd[key] !== 'undefined') {

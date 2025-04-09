@@ -56,6 +56,7 @@ module.exports = (api, { target, entry, name }) => {
     // externalize Kdu in case user imports it
     config
       .externals({
+        ...config.get('externals'),
         kdu: 'Kdu'
       })
 

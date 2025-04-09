@@ -1,10 +1,12 @@
 const defaults = {
   clean: true,
-  target: 'app'
+  target: 'app',
+  formats: 'commonjs,umd,umd-min',
+  'unsafe-inline': true
 }
 
 const buildModes = {
-  lib: 'library (commonjs + umd)',
+  lib: 'library',
   wc: 'web component',
   'wc-async': 'web component (async)'
 }
@@ -25,14 +27,16 @@ module.exports = (api, options) => {
       '--mode': `specify env mode (default: production)`,
       '--dest': `specify output directory (default: ${options.outputDir})`,
       '--modern': `build app targeting modern browsers with auto fallback`,
+      '--no-unsafe-inline': `build app without introducing inline scripts`,
       '--target': `app | lib | wc | wc-async (default: ${defaults.target})`,
+      '--formats': `list of output formats for library builds (default: ${defaults.formats})`,
       '--name': `name for lib or web-component mode (default: "name" in package.json or entry filename)`,
       '--no-clean': `do not remove the dist directory before building the project`,
       '--report': `generate report.html to help analyze bundle content`,
       '--report-json': 'generate report.json to help analyze bundle content',
       '--watch': `watch for changes`
     }
-  }, async (args) => {
+  }, async (args, rawArgs) => {
     for (const key in defaults) {
       if (args[key] == null) {
         args[key] = defaults[key]
@@ -46,20 +50,29 @@ module.exports = (api, options) => {
     process.env.KDU_CLI_BUILD_TARGET = args.target
     if (args.modern && args.target === 'app') {
       process.env.KDU_CLI_MODERN_MODE = true
-      delete process.env.KDU_CLI_MODERN_BUILD
-      await build(Object.assign({}, args, {
-        modernBuild: false,
-        keepAlive: true
-      }), api, options)
-
-      process.env.KDU_CLI_MODERN_BUILD = true
-      await build(Object.assign({}, args, {
-        modernBuild: true,
-        clean: false
-      }), api, options)
-
+      if (!process.env.KDU_CLI_MODERN_BUILD) {
+        // main-process for legacy build
+        await build(Object.assign({}, args, {
+          modernBuild: false,
+          keepAlive: true
+        }), api, options)
+        // spawn sub-process of self for modern build
+        const { execa } = require('@kdujs/cli-shared-utils')
+        const cliBin = require('path').resolve(__dirname, '../../../bin/kdu-cli-service.js')
+        await execa(cliBin, ['build', ...rawArgs], {
+          stdio: 'inherit',
+          env: {
+            KDU_CLI_MODERN_BUILD: true
+          }
+        })
+      } else {
+        // sub-process for modern build
+        await build(Object.assign({}, args, {
+          modernBuild: true,
+          clean: false
+        }), api, options)
+      }
       delete process.env.KDU_CLI_MODERN_MODE
-      delete process.env.KDU_CLI_MODERN_BUILD
     } else {
       if (args.modern) {
         const { warn } = require('@kdujs/cli-shared-utils')
@@ -102,7 +115,8 @@ async function build (args, api, options) {
   } else {
     const buildMode = buildModes[args.target]
     if (buildMode) {
-      logWithSpinner(`Building for ${mode} as ${buildMode}...`)
+      const additionalParams = buildMode === 'library' ? ` (${args.formats})` : ``
+      logWithSpinner(`Building for ${mode} as ${buildMode}${additionalParams}...`)
     } else {
       throw new Error(`Unknown build target: ${args.target}`)
     }
@@ -175,7 +189,6 @@ async function build (args, api, options) {
   }
 
   return new Promise((resolve, reject) => {
-    const isFreshBuild = !fs.existsSync(api.resolve('node_modules/.cache'))
     webpack(webpackConfig, (err, stats) => {
       stopSpinner(false)
       if (err) {
@@ -198,17 +211,6 @@ async function build (args, api, options) {
             info(`Check out deployment instructions at ${chalk.cyan(`https://kdujs-cli.web.app/guide/deployment.html`)}\n`)
           } else {
             done(`Build complete. Watching for changes...`)
-          }
-          if (
-            options.baseUrl === '/' &&
-            // only log the tips if this is the first build
-            isFreshBuild
-          ) {
-            console.log(
-              chalk.gray(`Tip: the directory is meant to be served by an HTTP server, and will not work if\n` +
-              `you open it directly over file:// protocol. To preview it locally, use an HTTP\n` +
-              `server like the ${chalk.yellow(`serve`)} package on npm.\n`)
-            )
           }
         }
       }

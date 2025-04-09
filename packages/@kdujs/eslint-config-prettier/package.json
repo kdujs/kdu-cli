@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/eslint-config-prettier",
-  "version": "3.0.0",
+  "version": "4.0.1-0",
   "description": "eslint-config-prettier for kdu-cli",
   "main": "index.js",
   "publishConfig": {
@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/eslint-config-prettier"
   },
   "keywords": [
     "kdu",
@@ -21,8 +22,8 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/eslint-config-prettier#readme",
   "dependencies": {
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "prettier": "^1.12.1"
+    "eslint-config-prettier": "4.0.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "prettier": "1.16.4"
   }
 }

@@ -20,9 +20,12 @@ async function create (projectName, options) {
 
   const result = validateProjectName(name)
   if (!result.validForNewPackages) {
-    console.error(chalk.red(`Invalid project name: "${projectName}"`))
+    console.error(chalk.red(`Invalid project name: "${name}"`))
     result.errors && result.errors.forEach(err => {
-      console.error(chalk.red(err))
+      console.error(chalk.red.dim('Error: ' + err))
+    })
+    result.warnings && result.warnings.forEach(warn => {
+      console.error(chalk.red.dim('Warning: ' + warn))
     })
     exit(1)
   }
@@ -74,6 +77,8 @@ module.exports = (...args) => {
   return create(...args).catch(err => {
     stopSpinner(false) // do not persist
     error(err)
-    process.exit(1)
+    if (!process.env.KDU_CLI_TEST) {
+      process.exit(1)
+    }
   })
 }

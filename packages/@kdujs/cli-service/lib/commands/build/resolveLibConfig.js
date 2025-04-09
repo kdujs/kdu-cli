@@ -1,10 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = (api, { entry, name }, options) => {
-  // inline all static asset files since there is no publicPath handling
-  process.env.KDU_CLI_INLINE_LIMIT = Infinity
-
+module.exports = (api, { entry, name, formats }, options) => {
   const { log, error } = require('@kdujs/cli-shared-utils')
   const abort = msg => {
     log()
@@ -49,6 +46,7 @@ module.exports = (api, { entry, name }, options) => {
     // externalize Kdu in case user imports it
     config
       .externals({
+        ...config.get('externals'),
         kdu: {
           commonjs: 'kdu',
           commonjs2: 'kdu',
@@ -65,7 +63,8 @@ module.exports = (api, { entry, name }, options) => {
             template: path.resolve(__dirname, template),
             inject: false,
             filename: 'demo.html',
-            libName
+            libName,
+            cssExtract: config.plugins.has('extract-css')
           }])
     }
 
@@ -116,9 +115,20 @@ module.exports = (api, { entry, name }, options) => {
     return rawConfig
   }
 
-  return [
-    genConfig('commonjs2', 'common'),
-    genConfig('umd', undefined, true),
-    genConfig('umd', 'umd.min')
-  ]
+  const configMap = {
+    commonjs: genConfig('commonjs2', 'common'),
+    umd: genConfig('umd', undefined, true),
+    'umd-min': genConfig('umd', 'umd.min')
+  }
+
+  const formatArray = (formats + '').split(',')
+  const configs = formatArray.map(format => configMap[format])
+  if (configs.indexOf(undefined) !== -1) {
+    const unknownFormats = formatArray.filter(f => configMap[f] === undefined).join(', ')
+    abort(
+      `Unknown library build formats: ${unknownFormats}`
+    )
+  }
+
+  return configs
 }

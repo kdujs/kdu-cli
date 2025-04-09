@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/eslint-config-airbnb",
-  "version": "3.0.0",
+  "version": "4.0.0-0",
   "description": "eslint-config-airbnb for kdu-cli",
   "main": "index.js",
   "publishConfig": {
@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/eslint-config-airbnb"
   },
   "keywords": [
     "kdu",
@@ -21,8 +22,8 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/eslint-config-airbnb#readme",
   "dependencies": {
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-import-resolver-webpack": "^0.9.0",
-    "eslint-plugin-import": "^2.11.0"
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-import-resolver-webpack": "0.11.0",
+    "eslint-plugin-import": "2.16.0"
   }
 }

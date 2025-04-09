@@ -1,6 +1,6 @@
 const chalk = require('chalk')
 const execa = require('execa')
-const { request } = require('@kdujs/cli-shared-utils')
+const { hasYarn, request } = require('@kdujs/cli-shared-utils')
 const inquirer = require('inquirer')
 const registries = require('./registries')
 const { loadOptions, saveOptions } = require('../options')
@@ -17,7 +17,11 @@ function removeSlash (url) {
 let checked
 let result
 
-module.exports = async function shouldUseTaobao () {
+module.exports = async function shouldUseTaobao (command) {
+  if (!command) {
+    command = hasYarn() ? 'yarn' : 'npm'
+  }
+
   // ensure this only gets called once.
   if (checked) return result
   checked = true
@@ -34,11 +38,11 @@ module.exports = async function shouldUseTaobao () {
     return val
   }
 
-  const userCurrent = (await execa(`npm`, ['config', 'get', 'registry'])).stdout
-  const defaultRegistry = registries.npm
+  const userCurrent = (await execa(command, ['config', 'get', 'registry'])).stdout
+  const defaultRegistry = registries[command]
 
   if (removeSlash(userCurrent) !== removeSlash(defaultRegistry)) {
-    // user has configured custom regsitry, respect that
+    // user has configured custom registry, respect that
     return save(false)
   }
 
@@ -67,7 +71,7 @@ module.exports = async function shouldUseTaobao () {
       name: 'useTaobaoRegistry',
       type: 'confirm',
       message: chalk.yellow(
-        ` Your connection to the default npm registry seems to be slow.\n` +
+        ` Your connection to the default ${command} registry seems to be slow.\n` +
           `   Use ${chalk.cyan(registries.taobao)} for faster installation?`
       )
     }

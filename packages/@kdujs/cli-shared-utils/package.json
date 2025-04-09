@@ -1,11 +1,12 @@
 {
   "name": "@kdujs/cli-shared-utils",
-  "version": "3.0.0",
+  "version": "3.5.1-0",
   "description": "shared utilities for kdu-cli packages",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/cli-shared-utils"
   },
   "keywords": [
     "kdu",
@@ -19,17 +20,18 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/cli-shared-utils#readme",
   "dependencies": {
-    "@nkduy/launch-editor": "^2.2.1",
-    "chalk": "^2.4.1",
-    "execa": "^0.10.0",
-    "joi": "^13.0.0",
-    "node-ipc": "^9.1.1",
-    "opn": "^5.3.0",
-    "ora": "^2.1.0",
-    "request": "^2.87.0",
-    "request-promise-native": "^1.0.5",
-    "semver": "^5.5.0",
-    "string.prototype.padstart": "^3.0.0"
+    "@nkduy/launch-editor": "2.2.1",
+    "chalk": "2.4.1",
+    "execa": "1.0.0",
+    "joi": "14.3.0",
+    "lru-cache": "5.1.1",
+    "node-ipc": "9.1.1",
+    "opn": "5.3.0",
+    "ora": "3.1.0",
+    "request": "2.87.0",
+    "request-promise-native": "1.0.7",
+    "semver": "5.5.0",
+    "string.prototype.padstart": "3.0.0"
   },
   "publishConfig": {
     "access": "public"

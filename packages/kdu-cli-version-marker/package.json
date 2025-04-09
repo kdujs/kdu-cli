@@ -1,7 +1,0 @@
-{
-  "name": "kdu-cli-version-marker",
-  "version": "3.0.0",
-  "description": "version marker for @kdujs/cli",
-  "author": "NKDuy",
-  "license": "MIT"
-}

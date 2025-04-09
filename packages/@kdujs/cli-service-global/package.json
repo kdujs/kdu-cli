@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/cli-service-global",
-  "version": "3.0.0",
+  "version": "3.5.1-0",
   "description": "kdu-cli-service global addon for kdu-cli",
   "main": "index.js",
   "publishConfig": {
@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/cli-service-global"
   },
   "keywords": [
     "kdu",
@@ -21,14 +22,16 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/cli-build#readme",
   "dependencies": {
-    "@kdujs/babel-preset-app": "^3.0.0",
-    "@kdujs/cli-plugin-babel": "^3.0.0",
-    "@kdujs/cli-plugin-eslint": "^3.0.0",
-    "@kdujs/cli-service": "^3.0.0",
-    "chalk": "^2.4.1",
-    "eslint-plugin-kdu": "^4.5.1",
-    "kdu": "^2.5.24",
-    "kdu-template-compiler": "^2.5.24",
-    "resolve": "^1.8.1"
+    "@kdujs/babel-preset-app": "3.5.1-0",
+    "@kdujs/cli-plugin-babel": "3.5.1-0",
+    "@kdujs/cli-plugin-eslint": "3.5.1-0",
+    "@kdujs/cli-service": "3.5.1-0",
+    "babel-eslint": "10.0.1",
+    "chalk": "2.4.2",
+    "eslint": "4.19.1",
+    "eslint-plugin-kdu": "4.5.1",
+    "kdu": "2.6.14",
+    "kdu-template-compiler": "2.6.14",
+    "resolve": "1.10.0"
   }
 }

@@ -1,11 +1,31 @@
+const path = require('path')
+const { isWindows } = require('@kdujs/cli-shared-utils')
+
+function genTranspileDepRegex (transpileDependencies) {
+  const deps = transpileDependencies.map(dep => {
+    if (typeof dep === 'string') {
+      const depPath = path.join('node_modules', dep, '/')
+      return isWindows
+        ? depPath.replace(/\\/g, '\\\\') // double escape for windows style path
+        : depPath
+    } else if (dep instanceof RegExp) {
+      return dep.source
+    }
+  })
+  return deps.length ? new RegExp(deps.join('|')) : null
+}
+
 module.exports = (api, options) => {
   const useThreads = process.env.NODE_ENV === 'production' && options.parallel
   const cliServicePath = require('path').dirname(require.resolve('@kdujs/cli-service'))
+  const transpileDepRegex = genTranspileDepRegex(options.transpileDependencies)
 
   api.chainWebpack(webpackConfig => {
+    webpackConfig.resolveLoader.modules.prepend(path.join(__dirname, 'node_modules'))
+
     const jsRule = webpackConfig.module
       .rule('js')
-        .test(/\.jsx?$/)
+        .test(/\.m?jsx?$/)
         .exclude
           .add(filepath => {
             // always transpile js in kdu files
@@ -17,7 +37,7 @@ module.exports = (api, options) => {
               return true
             }
             // check if this is something the user explicitly wants to transpile
-            if (options.transpileDependencies.some(dep => filepath.match(dep))) {
+            if (transpileDepRegex && transpileDepRegex.test(filepath)) {
               return false
             }
             // Don't transpile node_modules
@@ -28,7 +48,7 @@ module.exports = (api, options) => {
           .loader('cache-loader')
           .options(api.genCacheConfig('babel-loader', {
             '@babel/core': require('@babel/core/package.json').version,
-            '@kdujs/babel-preset-app': require('@kdujs/babel-preset-app').version,
+            '@kdujs/babel-preset-app': require('@kdujs/babel-preset-app/package.json').version,
             'babel-loader': require('babel-loader/package.json').version,
             modern: !!process.env.KDU_CLI_MODERN_BUILD,
             browserslist: api.service.pkg.browserslist

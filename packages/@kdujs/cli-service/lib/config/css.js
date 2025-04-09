@@ -15,6 +15,11 @@ module.exports = (api, options) => {
     const shadowMode = !!process.env.KDU_CLI_CSS_SHADOW_MODE
     const isProd = process.env.NODE_ENV === 'production'
 
+    const defaultSassLoaderOptions = {}
+    try {
+      defaultSassLoaderOptions.implementation = require('sass')
+    } catch (e) {}
+
     const {
       modules = false,
       extract = isProd,
@@ -25,24 +30,49 @@ module.exports = (api, options) => {
     const shouldExtract = extract !== false && !shadowMode
     const filename = getAssetPath(
       options,
-      `css/[name]${options.filenameHashing ? '.[contenthash:8]' : ''}.css`,
-      true /* placeAtRootIfRelative */
+      `css/[name]${options.filenameHashing ? '.[contenthash:8]' : ''}.css`
     )
     const extractOptions = Object.assign({
       filename,
       chunkFilename: filename
     }, extract && typeof extract === 'object' ? extract : {})
 
+    // use relative publicPath in extracted CSS based on extract location
+    const cssPublicPath = process.env.KDU_CLI_BUILD_TARGET === 'lib'
+      // in lib mode, CSS is extracted to dist root.
+      ? './'
+      : '../'.repeat(
+        extractOptions.filename
+            .replace(/^\.[\/\\]/, '')
+            .split(/[\/\\]/g)
+            .length - 1
+      )
+
     // check if the project has a valid postcss config
     // if it doesn't, don't use postcss-loader for direct style imports
     // because otherwise it would throw error when attempting to load postcss config
-    const hasPostCSSConfig = !!(api.service.pkg.postcss || findExisting(api.resolve('.'), [
+    const hasPostCSSConfig = !!(loaderOptions.postcss || api.service.pkg.postcss || findExisting(api.resolve('.'), [
       '.postcssrc',
       '.postcssrc.js',
       'postcss.config.js',
       '.postcssrc.yaml',
       '.postcssrc.json'
     ]))
+
+    // if building for production but not extracting CSS, we need to minimize
+    // the embbeded inline CSS as they will not be going through the optimizing
+    // plugin.
+    const needInlineMinification = isProd && !shouldExtract
+
+    const cssnanoOptions = {
+      preset: ['default', {
+        mergeLonghand: false,
+        cssDeclarationSorter: false
+      }]
+    }
+    if (options.productionSourceMap && sourceMap) {
+      cssnanoOptions.map = { inline: false }
+    }
 
     function createCSSRule (lang, test, loader, options) {
       const baseRule = webpackConfig.module.rule(lang).test(test)
@@ -68,6 +98,9 @@ module.exports = (api, options) => {
           rule
             .use('extract-css-loader')
             .loader(require('mini-css-extract-plugin').loader)
+            .options({
+              publicPath: cssPublicPath
+            })
         } else {
           rule
             .use('kdu-style-loader')
@@ -82,7 +115,8 @@ module.exports = (api, options) => {
           sourceMap,
           importLoaders: (
             1 + // stylePostLoader injected by kdu-loader
-            hasPostCSSConfig
+            (hasPostCSSConfig ? 1 : 0) +
+            (needInlineMinification ? 1 : 0)
           )
         }, loaderOptions.css)
 
@@ -100,6 +134,16 @@ module.exports = (api, options) => {
           .use('css-loader')
           .loader('css-loader')
           .options(cssLoaderOptions)
+
+        if (needInlineMinification) {
+          rule
+            .use('cssnano')
+            .loader('postcss-loader')
+            .options({
+              sourceMap,
+              plugins: [require('cssnano')(cssnanoOptions)]
+            })
+        }
 
         if (hasPostCSSConfig) {
           rule
@@ -119,8 +163,8 @@ module.exports = (api, options) => {
 
     createCSSRule('css', /\.css$/)
     createCSSRule('postcss', /\.p(ost)?css$/)
-    createCSSRule('scss', /\.scss$/, 'sass-loader', loaderOptions.sass)
-    createCSSRule('sass', /\.sass$/, 'sass-loader', Object.assign({
+    createCSSRule('scss', /\.scss$/, 'sass-loader', Object.assign(defaultSassLoaderOptions, loaderOptions.sass))
+    createCSSRule('sass', /\.sass$/, 'sass-loader', Object.assign(defaultSassLoaderOptions, {
       indentedSyntax: true
     }, loaderOptions.sass))
     createCSSRule('less', /\.less$/, 'less-loader', loaderOptions.less)
@@ -133,24 +177,16 @@ module.exports = (api, options) => {
       webpackConfig
         .plugin('extract-css')
           .use(require('mini-css-extract-plugin'), [extractOptions])
-    }
 
-    if (isProd) {
-      // optimize CSS (dedupe)
-      const cssProcessorOptions = {
-        safe: true,
-        autoprefixer: { disable: true },
-        mergeLonghand: false
+      // minify extracted CSS
+      if (isProd) {
+        webpackConfig
+          .plugin('optimize-css')
+            .use(require('@intervolga/optimize-cssnano-plugin'), [{
+              sourceMap: options.productionSourceMap && sourceMap,
+              cssnanoOptions
+            }])
       }
-      if (options.productionSourceMap && sourceMap) {
-        cssProcessorOptions.map = { inline: false }
-      }
-      webpackConfig
-        .plugin('optimize-css')
-          .use(require('@intervolga/optimize-cssnano-plugin'), [{
-            sourceMap: options.productionSourceMap && sourceMap,
-            cssnanoOptions: cssProcessorOptions
-          }])
     }
   })
 }

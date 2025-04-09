@@ -26,7 +26,7 @@ const defaultConfigTransforms = {
   }),
   postcss: new ConfigTransform({
     file: {
-      js: ['.postcssrc.js'],
+      js: ['postcss.config.js'],
       json: ['.postcssrc.json', '.postcssrc'],
       yaml: ['.postcssrc.yaml', '.postcssrc.yml']
     }
@@ -177,15 +177,25 @@ module.exports = class Generator {
       'name',
       'version',
       'private',
+      'description',
+      'author',
       'scripts',
+      'main',
+      'module',
+      'browser',
+      'jsDelivr',
+      'unpkg',
+      'files',
       'dependencies',
       'devDependencies',
+      'peerDependencies',
       'kdu',
       'babel',
       'eslintConfig',
       'prettier',
       'postcss',
-      'browserslist'
+      'browserslist',
+      'jest'
     ])
 
     debug('kdu:cli-pkg')(this.pkg)

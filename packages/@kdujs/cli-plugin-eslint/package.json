@@ -1,11 +1,12 @@
 {
   "name": "@kdujs/cli-plugin-eslint",
-  "version": "3.0.0",
+  "version": "3.5.1-0",
   "description": "eslint plugin for kdu-cli",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/cli-plugin-eslint"
   },
   "keywords": [
     "kdu",
@@ -22,10 +23,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@kdujs/cli-shared-utils": "^3.0.0",
-    "babel-eslint": "^8.2.5",
+    "@kdujs/cli-shared-utils": "3.5.1-0",
+    "babel-eslint": "10.0.1",
+    "eslint-loader": "2.1.2",
+    "globby": "9.0.0",
+    "webpack": ">=4 < 4.29"
+  },
+  "optionalDependencies": {
     "eslint": "^4.19.1",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-kdu": "^4.5.1"
+    "eslint-plugin-kdu": "4.5.1"
   }
 }

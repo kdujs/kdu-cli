@@ -1,21 +1,17 @@
-module.exports = (api, options) => {
-  // pre-rc7 warning
-  try {
-    require('typescript/package.json')
-  } catch (e) {
-    throw new Error(
-      `"typescript" is now a peer dependency of "@kdujs/cli-plugin-typescript".\n` +
-      `To fix the build, explicitly install typescript in your project.`
-    )
-  }
+const path = require('path')
 
+module.exports = (api, options) => {
   const fs = require('fs')
   const useThreads = process.env.NODE_ENV === 'production' && options.parallel
 
   api.chainWebpack(config => {
-    config.entry('app')
-      .clear()
-      .add('./src/main.ts')
+    config.resolveLoader.modules.prepend(path.join(__dirname, 'node_modules'))
+
+    if (!options.pages) {
+      config.entry('app')
+        .clear()
+        .add('./src/main.ts')
+    }
 
     config.resolve
       .extensions
@@ -67,20 +63,24 @@ module.exports = (api, options) => {
       return options
     })
 
-    config
-      .plugin('fork-ts-checker')
-        .use(require('fork-ts-checker-webpack-plugin'), [{
-          kdu: true,
-          tslint: options.lintOnSave !== false && fs.existsSync(api.resolve('tslint.json')),
-          formatter: 'codeframe',
-          // https://github.com/TypeStrong/ts-loader#happypackmode-boolean-defaultfalse
-          checkSyntacticErrors: useThreads
-        }])
+    if (!process.env.KDU_CLI_TEST) {
+      // this plugin does not play well with jest + cypress setup (tsPluginE2e.spec.js) somehow
+      // so temporarily disabled for kdu-cli tests
+      config
+        .plugin('fork-ts-checker')
+          .use(require('fork-ts-checker-webpack-plugin'), [{
+            kdu: true,
+            tslint: options.lintOnSave !== false && fs.existsSync(api.resolve('tslint.json')),
+            formatter: 'codeframe',
+            // https://github.com/TypeStrong/ts-loader#happypackmode-boolean-defaultfalse
+            checkSyntacticErrors: useThreads
+          }])
+    }
   })
 
   if (!api.hasPlugin('eslint')) {
     api.registerCommand('lint', {
-      descriptions: 'lint source files with TSLint',
+      description: 'lint source files with TSLint',
       usage: 'kdu-cli-service lint [options] [...files]',
       options: {
         '--format [formatter]': 'specify formatter (default: codeFrame)',

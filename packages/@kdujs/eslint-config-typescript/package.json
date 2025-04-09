@@ -1,6 +1,6 @@
 {
   "name": "@kdujs/eslint-config-typescript",
-  "version": "3.0.0",
+  "version": "4.0.0-0",
   "description": "eslint-config-typescript for kdu-cli",
   "main": "index.js",
   "publishConfig": {
@@ -8,7 +8,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdujs/kdu-cli.git"
+    "url": "git+https://github.com/kdujs/kdu-cli.git",
+    "directory": "packages/@kdujs/eslint-config-typescript"
   },
   "keywords": [
     "kdu",
@@ -21,7 +22,7 @@
   },
   "homepage": "https://github.com/kdujs/kdu-cli/tree/main/packages/@kdujs/eslint-config-typescript#readme",
   "dependencies": {
-    "eslint-plugin-typescript": "^0.12.0",
-    "typescript-eslint-parser": "^18.0.0"
+    "@typescript-eslint/eslint-plugin": "1.4.1",
+    "@typescript-eslint/parser": "1.4.1"
   }
 }
