@@ -156,7 +156,8 @@ module.exports = (api, options) => {
         .plugin('feature-flags')
           .use(webpack.DefinePlugin, [{
             __KDU_OPTIONS_API__: 'true',
-            __KDU_PROD_DEVTOOLS__: 'false'
+            __KDU_PROD_DEVTOOLS__: 'false',
+            __KDU_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'
           }])
     }
 
