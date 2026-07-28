@@ -26,7 +26,7 @@ yarn serve
 If you have [npx](https://github.com/npm/npx) available (should be bundled with an up-to-date version of npm), you can also invoke the binary directly with:
 
 ```bash
-npx kdu-cli-service serve
+npx --no kdu-cli-service serve
 ```
 
 ## kdu-cli-service serve
@@ -106,13 +106,13 @@ You can use `kdu-cli-service inspect` to inspect the webpack config inside a Kdu
 Some CLI plugins  will inject additional commands to `kdu-cli-service`. For example, `@kdujs/cli-plugin-eslint` injects the `kdu-cli-service lint` command. You can see all injected commands by running:
 
 ```bash
-npx kdu-cli-service help
+npx --no kdu-cli-service help
 ```
 
 You can also learn about the available options of each command with:
 
 ```bash
-npx kdu-cli-service help [command]
+npx --no kdu-cli-service help [command]
 ```
 
 ## Skipping Plugins
@@ -120,7 +120,7 @@ npx kdu-cli-service help [command]
 You can exclude specific plugins when running a command by passing the name of the plugin to the `--skip-plugins` option:
 
 ```bash
-npx kdu-cli-service build --skip-plugins pwa
+npx --no kdu-cli-service build --skip-plugins pwa
 ```
 
 ::: tip
@@ -130,18 +130,18 @@ This option is available for _every_ `kdu-cli-service` command, including custom
 You can skip multiple plugins by passing their names as a comma-separated list or by repeating the argument:
 
 ```bash
-npx kdu-cli-service build --skip-plugins pwa,apollo --skip-plugins eslint
+npx --no kdu-cli-service build --skip-plugins pwa,apollo --skip-plugins eslint
 ```
 
 Plugin names are resolved the same way they are during install, as described [here](./plugins-and-presets.md#installing-plugins-in-an-existing-project)
 
 ```bash
 # these are all equivalent
-npx kdu-cli-service build --skip-plugins pwa
+npx --no kdu-cli-service build --skip-plugins pwa
 
-npx kdu-cli-service build --skip-plugins @kdujs/pwa
+npx --no kdu-cli-service build --skip-plugins @kdujs/pwa
 
-npx kdu-cli-service build --skip-plugins @kdujs/cli-plugin-pwa
+npx --no kdu-cli-service build --skip-plugins @kdujs/cli-plugin-pwa
 ```
 
 ## Caching and Parallelization
